@@ -1,0 +1,87 @@
+---
+title: "Comparing Endid and LWDID"
+format: html
+engine: julia
+---
+
+This vignette implements the comparison between `Endid.jl` and a linear DiD approach, similar to the R version. We'll simulate a panel where the treatment has a **location-scale** effect.
+
+## Setup
+
+```{julia}
+using Endid
+using DataFrames
+using Statistics
+using Random
+using Distributions
+using Plots
+
+Random.seed!(42)
+
+# Generate synthetic panel data with location-scale treatment effect
+N = 200
+T_total = 6
+tpost1 = 4
+
+unit = repeat(1:N, inner=T_total)
+time = repeat(1:T_total, outer=N)
+alpha = repeat(randn(N) .* 0.3, inner=T_total)  # Unit fixed effects
+# Group 1: treated, Group 0: control
+group = repeat(vcat(fill(1, Int(N/2)), fill(0, Int(N/2))), inner=T_total)
+post = [t >= tpost1 ? 1 : 0 for t in time]
+D = post .* group
+
+# Location-scale DGP: treatment shifts mean by 0.5 and increases SD from 0.5 to 1.5
+epsilon = randn(N * T_total)
+y = alpha .+ 0.5 .* D .+ (0.5 .+ 1.0 .* D) .* epsilon
+
+df = DataFrame(unit = unit, time = time, y = y,
+               post_treat = post, group = group)
+
+first(df, 10)
+```
+
+## Estimating with Endid
+
+`Endid` uses `Engression` to capture the distributional nature of the effect.
+
+```{julia}
+#| results: hide
+# We use fewer epochs and bootstrap draws for speed in this vignette
+fit_endid = endid(df, :y, :unit, :time, :post_treat;
+                  dvar=:group, num_epochs=500, nboot=20, seed=42)
+```
+
+```{julia}
+println(fit_endid)
+```
+
+## Visualizing Quantile Treatment Effects
+
+The `plot` recipe for `EndidResult` allows us to easily visualize the QTEs.
+
+```{julia}
+#| label: fig-qte
+#| fig-cap: "Quantile Treatment Effects estimated by Endid"
+plot(fit_endid)
+```
+
+### Adding the True QTE
+
+We can overlay the analytical QTE to verify that `Endid` recovers the true distributional effect.
+The true QTE at quantile $\tau$ is:
+$$\text{QTE}(\tau) = 0.5 + \Phi^{-1}(\tau)$$
+
+```{julia}
+#| label: fig-qte-true
+#| fig-cap: "Endid QTE vs True QTE"
+taus = 0.05:0.05:0.95
+true_qte = 0.5 .+ quantile.(Normal(0, 1), taus)
+
+p = plot(fit_endid)
+plot!(p, taus, true_qte, label="True QTE", linestyle=:dash, color=:red, linewidth=2)
+```
+
+## Conclusion
+
+In this example, a linear DiD would only capture the average effect (ATT) of 0.5. `Endid` reveals that the treatment increases inequality: it has a negative effect at low quantiles and a large positive effect at high quantiles.

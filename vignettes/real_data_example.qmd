@@ -1,0 +1,75 @@
+---
+title: "Real Data Example: Castle Doctrine"
+format: html
+engine: julia
+---
+
+In this vignette, we apply `Endid.jl` to the "Castle Doctrine" dataset from Cheng and Hoekstra (2013). States adopted castle doctrine laws in different years (2005--2009), making this a staggered adoption design.
+
+## Data Preparation
+
+We load the data and set up the treatment timing variable (`gvar`). States that never adopted the law during the sample period serve as controls.
+
+```{julia}
+using Endid
+using DataFrames
+using CSV
+using Statistics
+using Plots
+using Random
+
+Random.seed!(42)
+
+# Load the Castle Doctrine dataset
+castle = CSV.read("data/castle.csv", DataFrame)
+
+# Create gvar: first treatment year (missing for never-treated)
+# In the CSV, effyear is 0 for never-treated
+castle.gvar = [y == 0 ? missing : y for y in castle.effyear]
+
+# Time-invariant controls
+controls = ["poverty", "unemployrt", "blackm_15_24", "whitem_15_24"]
+
+println("States by cohort:")
+cohorts = combine(groupby(castle, :sid), :gvar => first => :gvar)
+println(combine(groupby(cohorts, :gvar), :sid => length => :count))
+```
+
+## Distributional Estimation with Endid
+
+`Endid` uses engression to estimate how the law affects different parts of the homicide rate distribution, aggregating across all treatment cohorts. We use `endid_staggered` to handle the different treatment timings.
+
+```{julia}
+#| results: hide
+# Reduced epochs and bootstrap for faster rendering
+fit_endid = endid_staggered(
+    castle, 
+    :lhomicide, # Outcome
+    :sid,       # Unit ID
+    :year,      # Time
+    :gvar;      # Treatment timing
+    controls = controls,
+    rolling = "demean",
+    num_epochs = 500,
+    nboot = 20,
+    seed = 42
+)
+```
+
+```{julia}
+println(fit_endid)
+```
+
+## Visualizing Quantile Treatment Effects (QTE)
+
+While average effects provide a summary, `Endid` allows us to visualize how the policy impact varies across the distribution of the outcome.
+
+```{julia}
+#| label: fig-qte
+#| fig-cap: "Quantile Treatment Effects of Castle Doctrine Laws"
+plot(fit_endid)
+```
+
+### Interpretation
+
+The `Endid` results show the **Quantile Treatment Effects (QTE)**. This distributional perspective is crucial for policy analysis, as it reveals whether the law's impact is concentrated in states with already high (or low) homicide rates, or if the effect is uniform across the distribution.
