@@ -19,7 +19,7 @@ using Random
 Random.seed!(42)
 
 castle = CSV.read(joinpath(pkgdir(Endid), "vignettes", "data", "castle.csv"), DataFrame)
-castle.gvar = [y == 0 ? missing : y for y in castle.effyear]
+castle.gvar = [ismissing(y) || y == 0 ? missing : y for y in castle.effyear]
 controls = ["poverty", "unemployrt", "blackm_15_24", "whitem_15_24"]
 
 cohorts = combine(groupby(castle, :sid), :gvar => first => :gvar)
