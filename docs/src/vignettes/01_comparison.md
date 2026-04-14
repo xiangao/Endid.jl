@@ -8,7 +8,7 @@ This example illustrates a location-scale treatment effect, where the policy cha
 
 ## Setup
 
-```julia
+```@example endid_comparison
 using Endid
 using DataFrames
 using Statistics
@@ -18,7 +18,7 @@ using Plots
 
 Random.seed!(42)
 
-N = 120
+N = 80
 T_total = 6
 tpost1 = 4
 
@@ -38,24 +38,26 @@ first(df, 10)
 
 ## Estimation
 
-```julia
+```@example endid_comparison
 fit_endid = endid(df, :y, :unit, :time, :post_treat;
-                  dvar=:group, num_epochs=25, nboot=3, seed=42)
+                  dvar=:group, num_epochs=10, nboot=1, seed=42)
 
 println(fit_endid)
 ```
 
 ## Quantile Treatment Effects
 
-```julia
+```@example endid_comparison
 p = plot(fit_endid)
 savefig(p, "endid_qte.svg")
 nothing
 ```
 
+![](endid_qte.svg)
+
 Overlay the analytical QTE, `0.5 + Φ^{-1}(τ)`:
 
-```julia
+```@example endid_comparison
 taus = 0.05:0.05:0.95
 true_qte = 0.5 .+ quantile.(Normal(0, 1), taus)
 
@@ -64,3 +66,5 @@ plot!(p2, taus, true_qte, label="True QTE", linestyle=:dash, color=:red, linewid
 savefig(p2, "endid_qte_true.svg")
 nothing
 ```
+
+![](endid_qte_true.svg)
