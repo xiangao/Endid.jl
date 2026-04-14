@@ -28,7 +28,7 @@ combine(groupby(cohorts, :gvar), :sid => length => :count)
 
 ## Distributional Estimation
 
-```julia
+```@example endid_castle
 fit_endid = endid_staggered(
     castle,
     :lhomicide,
@@ -47,8 +47,10 @@ println(fit_endid)
 
 ## Quantile Treatment Effects
 
-```julia
+```@example endid_castle
 p = plot(fit_endid)
 savefig(p, "castle_qte.svg")
 nothing
 ```
+
+![](castle_qte.svg)
