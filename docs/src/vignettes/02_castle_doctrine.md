@@ -8,7 +8,7 @@ This vignette applies `Endid.jl` to the Castle Doctrine dataset with staggered a
 
 ## Data Preparation
 
-```@example endid_castle_data
+```@example endid_castle
 using Endid
 using DataFrames
 using CSV
