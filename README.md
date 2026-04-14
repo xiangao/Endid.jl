@@ -71,6 +71,15 @@ plot(res_staggered)
 - **Parallel Bootstrap:** Uses Julia's multi-threading for fast inference.
 - **Plots Integration:** Easy visualization of QTE with 95% confidence intervals.
 
+## Vignettes
+
+Full documentation: **https://xiangao.github.io/Endid.jl/**
+
+| Vignette | Description |
+|----------|-------------|
+| [Comparison with Linear DiD](https://xiangao.github.io/Endid.jl/vignettes/01_comparison/) | Synthetic example comparing distributional and linear DiD targets |
+| [Castle Doctrine Example](https://xiangao.github.io/Endid.jl/vignettes/02_castle_doctrine/) | Replication-style workflow using staggered treatment timing |
+
 ## Core API
 
 ### `endid(df, y, id, time, post; kwargs...)`
