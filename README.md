@@ -2,9 +2,14 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-`Endid.jl` provides a Julia implementation of **Distributional Difference-in-Differences (DiD)** using **Engression**. This method follows the approach proposed by **Lee & Wooldridge (2025)**, leveraging the power of stochastic neural networks to estimate entire treatment effect distributions.
+`Endid.jl` is a Julia implementation of distributional difference-in-
+differences using `Engression.jl`. The design follows Lee and Wooldridge
+(2025): transform the panel using pre-treatment outcomes, then compare treated
+and control units in the transformed cross section.
 
-Unlike standard DiD, which typically focuses on the Average Treatment Effect on the Treated (ATT), `Endid.jl` allows for estimating the **Quantile Treatment Effects (QTE)** and handling non-parallel trends through distributional modeling.
+The usual DiD output is an ATT. Here the fitted counterfactual distribution can
+also be used for quantile treatment effects. This is useful when the treatment
+changes the spread or the tails of the outcome distribution, not only its mean.
 
 ## Installation
 
@@ -63,13 +68,13 @@ println(res_staggered)
 plot(res_staggered)
 ```
 
-## Key Features
+## What is included
 
-- **Lee & Wooldridge (2025) Framework:** Implements the latest advances in distributional DiD using panel data transformations.
-- **Quantile Treatment Effects:** Provides full-distribution counterfactual comparisons.
-- **Staggered Support:** Efficiently pools estimates across multiple treatment cohorts.
-- **Parallel Bootstrap:** Uses Julia's multi-threading for fast inference.
-- **Plots Integration:** Easy visualization of QTE with 95% confidence intervals.
+- Common-timing and staggered-adoption designs.
+- Demeaning or detrending based on pre-treatment outcomes.
+- ATT and quantile treatment effects.
+- Bootstrap inference.
+- Plot methods for the QTE curve.
 
 ## Vignettes
 
