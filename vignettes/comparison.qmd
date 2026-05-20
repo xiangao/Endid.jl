@@ -43,7 +43,7 @@ first(df, 10)
 
 ## Estimating with Endid
 
-`Endid` uses `Engression` to capture the distributional nature of the effect.
+`Endid` uses `Engression` to estimate the counterfactual distribution.
 
 ```{julia}
 #| results: hide
@@ -84,4 +84,6 @@ plot!(p, taus, true_qte, label="True QTE", linestyle=:dash, color=:red, linewidt
 
 ## Conclusion
 
-In this example, a linear DiD would only capture the average effect (ATT) of 0.5. `Endid` reveals that the treatment increases inequality: it has a negative effect at low quantiles and a large positive effect at high quantiles.
+In this example, a linear DiD would only report the average effect, about 0.5.
+`Endid` shows that the effect is negative at low quantiles and positive at high
+quantiles.

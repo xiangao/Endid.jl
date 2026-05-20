@@ -1,6 +1,8 @@
 # Endid.jl
 
-`Endid.jl` estimates distributional treatment effects in Difference-in-Differences settings, using flexible outcome modeling to recover quantile treatment effects rather than only average effects.
+`Endid.jl` estimates distributional treatment effects in difference-in-
+differences settings. The usual output is an ATT; here I also use the fitted
+counterfactual distribution to report quantile treatment effects.
 
 ## Included Tutorials
 

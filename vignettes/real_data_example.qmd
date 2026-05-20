@@ -72,4 +72,6 @@ plot(fit_endid)
 
 ### Interpretation
 
-The `Endid` results show the **Quantile Treatment Effects (QTE)**. This distributional perspective is crucial for policy analysis, as it reveals whether the law's impact is concentrated in states with already high (or low) homicide rates, or if the effect is uniform across the distribution.
+The `Endid` results show the quantile treatment effects. Here the question is
+whether the law's effect looks different in low- and high-homicide parts of the
+distribution.
